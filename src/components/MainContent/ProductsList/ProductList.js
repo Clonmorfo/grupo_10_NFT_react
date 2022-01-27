@@ -1,3 +1,4 @@
+//corregir el css con quique para que muestre bien las tarjetas
 import { render } from '@testing-library/react';
 import React,{Component} from 'react';
 import Product from './Product'
@@ -8,31 +9,57 @@ class ProductList extends Component {
     constructor(){
         super()
         this.state = {
+            
             page: 0,
             products : []
         }
     }
 
     componentDidMount(){
-        fetch('http://localhost:3050/product/api/products')
+        fetch('http://localhost:3050/product/api/products/page/'+ this.state.page  )
             .then(res=> {
                 return res.json()
             })
             .then(data =>{
                 this.setState({products: data.products})
             })
+            .catch(err =>{
+                console.log(err)
+            })
     }
 
+   
+
     nextPage(){
-        this.setState({
-            paginas : this.state.paginas + 1
-        })
+        fetch('http://localhost:3050/product/api/products/page/'+ (this.state.page +1)  )
+            .then(res=> {
+                return res.json()
+            })
+            .then(data =>{
+                if (data.products[0] !== undefined){
+
+                    this.setState({
+                        page : this.state.page +1,
+                        products: data.products})
+                }
+            })
     }
 
     previousPage(){
-        this.setState({
-            paginas : this.state.paginas - 1
-        })
+        fetch('http://localhost:3050/product/api/products/page/'+ (this.state.page - 1)  )
+            .then(res=> {
+                return res.json()
+            })
+            .then(data =>{
+                if (data.products[0] === undefined){
+                    this.setState({
+                        page: 0
+                    })
+                }
+                this.setState({
+                    page : this.state.page -1,
+                    products: data.products})
+                })
     }
 
     render(){
@@ -54,7 +81,7 @@ class ProductList extends Component {
                             </div>
                             <div className='sig-ant-btn'>
                                 <button onClick={()=>this.previousPage()} class="btn btn-danger"> Pagina anterior </button>
-                                <p>{this.state.paginas}</p>
+                                <p>{this.state.page +1 }</p>
                                 <button onClick={()=>this.nextPage()} class="btn btn-danger"> Pagina siguiente </button>
                               </div>
                         </div>

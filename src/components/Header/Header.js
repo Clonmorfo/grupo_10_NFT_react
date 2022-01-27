@@ -1,3 +1,5 @@
+//poner el usuario logueado en la cabecera
+
 import React from 'react';
 import "./style.css"
 

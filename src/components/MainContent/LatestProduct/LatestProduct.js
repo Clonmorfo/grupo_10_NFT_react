@@ -1,4 +1,4 @@
-
+/*revisar porq no se muestra bien la descripcion*/
 import React, {Component} from 'react';
 import "./LatestProduct.css"
 
@@ -6,19 +6,22 @@ class LatestProduct extends Component {
     constructor(){
         super();
         this.state= {
-            page : 1,
-            productImage : ""
+            page : 0,
+            productImage : "",
+            desc: ""
+
         }
     }
 
     componentDidMount(){
-        fetch("http://localhost:3050/product/api/products")
+        fetch("http://localhost:3050/product/api/products/page/" + (this.state.page ))
             .then(res => {
                 return res.json()
             })
             .then(data => {
                 this.setState({  
-                    productImage : data.products[this.state.page -1].image_url
+                    productImage : data.products[0].image_url,
+                    desc :data.products[0].description
                 })
             })
             .catch(err =>{
@@ -27,24 +30,19 @@ class LatestProduct extends Component {
     }
     
     nextPage(){
-        this.setState({
-            page : this.state.page + 1
-        })
-        fetch("http://localhost:3050/product/api/products")
+        
+        fetch("http://localhost:3050/product/api/products/page/" +(this.state.page +1))
             .then(res => {
                 return res.json()
             })
             .then(data => {
-                if(this.state.page > data.products.length){
+                if(data.products[0] !== undefined){
                     this.setState({
-                        page : 1
+                        page : this.state.page +1,
+                        productImage : data.products[0].image_url,
+                        desc:data.products[0].description
                     })
                 }
-                
-                this.setState({
-                    productImage : data.products[this.state.page -1].image_url
-                })
-
             })
             .catch(err =>{
                 console.log(err)
@@ -53,27 +51,23 @@ class LatestProduct extends Component {
     }
 
     previousPage(){
-        this.setState({
-            page : this.state.page - 1
+        fetch("http://localhost:3050/product/api/products/page/" +(this.state.page -1 ) )
+        .then(res => {
+            return res.json()
         })
-        fetch("http://localhost:3050/product/api/products")
-            .then(res => {
-                return res.json()
-            })
-            .then(data => {
-                if(this.state.page < 1){
-                    this.setState({
-                        page : data.products.length 
-                    })
-                }
+        .then(data => {
+            if(data.products[0] !== undefined){
                 this.setState({
-                    
-                    productImage : data.products[this.state.page -1].image_url
+                    page : this.state.page -1,
+                    productImage : data.products[0].image_url,
+                    desc:data.products[0].description
                 })
-            })
-            .catch(err =>{
-                console.log(err)
-            })
+            }
+        })
+        .catch(err =>{
+            console.log(err)
+        })
+    
     }
     
     render(){
@@ -96,12 +90,12 @@ class LatestProduct extends Component {
                             <div className="text-center">
                                 {contenido}
                             </div>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores, consequatur explicabo officia inventore libero veritatis iure voluptate reiciendis a magnam, vitae, aperiam voluptatum non corporis quae dolorem culpa citationem ratione aperiam voluptatum non corporis ratione aperiam voluptatum quae dolorem culpa ratione aperiam voluptatum?</p>
+                            <p>{this.state.desc}</p>
                             <div className='sig-ant-btn'>
 
-                                <button onClick={()=>this.previousPage()} class="btn btn-danger"> producto anterior </button>
-                                <p>{this.state.page}</p>
-                                <button onClick={()=>this.nextPage()} class="btn btn-danger"> producto siguiente </button>
+                                <button onClick={()=>this.previousPage()} class="btn btn-danger"> producto siguiente </button>
+                                <p>{this.state.page +1}</p>
+                                <button onClick={()=>this.nextPage()} class="btn btn-danger"> producto anterior</button>
                             </div>
                         </div>
                     </div>

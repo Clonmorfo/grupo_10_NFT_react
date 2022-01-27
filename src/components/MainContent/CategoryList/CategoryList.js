@@ -1,7 +1,7 @@
+//hacer que la cantidad se muestre con un css mas llamativo
+
 import React, { Component} from 'react';
 import Category from './Category'
-
-
 
 class ProductsPerCategory extends Component {
   constructor(){
@@ -13,16 +13,12 @@ class ProductsPerCategory extends Component {
   }
 
   componentDidMount(){
-    fetch('http://localhost:3050/product/api/products')
+    fetch('http://localhost:3050/product/api/products/page/1')
       .then(res => res.json())
       .then(data =>{
-       
         this.setState({
           categorys : data.categorys
-        }
-        )
-        
-       
+        })
       })
   }
   
